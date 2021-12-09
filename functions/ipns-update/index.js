@@ -1,5 +1,15 @@
 'use strict'
 
+const { create }  = require('ipfs-http-client')
+const {
+  Unauthorized,
+  BadRequest,
+  NotFound,
+  errResult
+} = require('./errors')
+
+const ipfs = create()
+
 const cors = {
   headers: {
     'Access-Control-Allow-Origin': '*',
@@ -8,30 +18,6 @@ const cors = {
   },
   statusCode: 200,
   body: 'preflight'
-}
-
-class BadRequest extends Error {
-  constructor (message) {
-    super(message)
-    this.statusCode = 400
-    this.type = 'BadRequest'
-  }
-}
-
-class Unauthorized extends Error {
-  constructor (message) {
-    super(message)
-    this.statusCode = 401
-    this.type = 'Unauthorized'
-  }
-}
-
-class NotFound extends Error {
-  constructor (message) {
-    super(message)
-    this.statusCode = 404
-    this.type = 'BadRequest'
-  }
 }
 
 function parseBody (body, options) {
@@ -59,15 +45,14 @@ function validateAuthorization (header) {
   if (decoded !== process.env.INCOMING_API_KEY) throw new Unauthorized('Invalid credentials')
 }
 
-function errResult (err) {
-  const { statusCode, message, type } = err
-  return {
-    statusCode,
-    body: JSON.stringify({ message, type }),
-    headers: cors.headers
-  }
+async function updateIpns (cid, key) {
+  const { name, value } = await ipfs.name.publish(
+    `/ipfs/${cid}`,
+    { key, lifetime: '365d' }
+  )
+
+  return name
 }
-    
 
 async function handler ({ httpMethod, body, isBase64Encoded }) {
   if (httpMethod === 'OPTIONS') return cors
