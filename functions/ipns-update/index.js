@@ -20,6 +20,9 @@ const cors = {
 
 const errResponder = errResult(cors.headers)
 
+// TODO implement an actual vault and cache, my goodness
+const keyCache = {}
+
 function parseBody (body, options) {
   if (options.isBase64Encoded) {
     return JSON.parse(Buffer.from(body, 'base64').toString())
@@ -54,7 +57,35 @@ async function updateIpns (cid, key) {
   return name
 }
 
+async function getKeyFor (subdomain) {
+  if (keyCache.subdomain) return { name: subdomain, id: keyCache.subdomain }
+
+  const key = await ipfs.key.gen(subdomain, { type: 'ed25519' })
+
+  keyCache.subdomain = key.id
+
+  return key
+}
+
 export async function handler ({ httpMethod, body, isBase64Encoded }) {
   if (httpMethod === 'OPTIONS') return cors
   if (httpMethod !== 'POST') return errResponder(new NotFound('Route not found'))
+
+  const data = parseBody(body, { isBase64Encoded })
+
+  try {
+    // validateAuthorization(headers.authorization)
+    validateBody(data)
+  } catch (err) {
+    return errResponder(err)
+  }
+
+  const key = await getKeyFor(data.subdomain)
+  const ipnsHash = await updateIpns(data.hash, key)
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ ipnsHash }),
+    headers: cors.headers
+  }
 }
