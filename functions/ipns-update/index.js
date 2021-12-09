@@ -1,14 +1,12 @@
-'use strict'
-
-const { create }  = require('ipfs-http-client')
-const {
+import Ipfs from 'ipfs-http-client'
+import {
   Unauthorized,
   BadRequest,
   NotFound,
   errResult
-} = require('./errors')
+} from './errors.js'
 
-const ipfs = create()
+const ipfs = Ipfs()
 
 const cors = {
   headers: {
@@ -19,6 +17,8 @@ const cors = {
   statusCode: 200,
   body: 'preflight'
 }
+
+const errResponder = errResult(cors.headers)
 
 function parseBody (body, options) {
   if (options.isBase64Encoded) {
@@ -54,9 +54,7 @@ async function updateIpns (cid, key) {
   return name
 }
 
-async function handler ({ httpMethod, body, isBase64Encoded }) {
+export async function handler ({ httpMethod, body, isBase64Encoded }) {
   if (httpMethod === 'OPTIONS') return cors
-  if (httpMethod !== 'POST') return errResult(new NotFound('Route not found'))
+  if (httpMethod !== 'POST') return errResponder(new NotFound('Route not found'))
 }
-
-module.exports = { handler }

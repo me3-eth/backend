@@ -2,26 +2,32 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": "./index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=14.13.1"
+  },
   "scripts": {
     "dev": "netlify functions:serve --port=7000",
-    "lint": "standard | snazzy"
+    "lint": "standard | snazzy",
+    "test": "tap"
   },
   "author": "0xcharchar",
   "license": "GPL-3.0",
   "dependencies": {
     "@ensdomains/ens-contracts": "^0.0.7",
     "ethers": "^5.4.7",
-    "ipfs-http-client": "^54.0.2",
-    "node-fetch": "^3.0.0",
+    "ipfs-http-client": "^47.0.0",
     "replacestream": "^4.0.3",
     "web3.storage": "^3.3.2"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
     "netlify-cli": "^8.0.1",
+    "nock": "^13.2.1",
     "snazzy": "^9.0.0",
-    "standard": "^16.0.4"
+    "standard": "^16.0.4",
+    "tap": "^15.1.5"
   },
   "standard": {
     "ignore": [

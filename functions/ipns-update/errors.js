@@ -1,6 +1,4 @@
-'use strict'
-
-class BadRequest extends Error {
+export class BadRequest extends Error {
   constructor (message) {
     super(message)
     this.statusCode = 400
@@ -8,7 +6,7 @@ class BadRequest extends Error {
   }
 }
 
-class Unauthorized extends Error {
+export class Unauthorized extends Error {
   constructor (message) {
     super(message)
     this.statusCode = 401
@@ -16,7 +14,7 @@ class Unauthorized extends Error {
   }
 }
 
-class NotFound extends Error {
+export class NotFound extends Error {
   constructor (message) {
     super(message)
     this.statusCode = 404
@@ -24,13 +22,13 @@ class NotFound extends Error {
   }
 }
 
-function errResult (err) {
-  const { statusCode, message, type } = err
-  return {
-    statusCode,
-    body: JSON.stringify({ message, type }),
-    headers: cors.headers
+export function errResult (headers) {
+  return function (err) {
+    const { statusCode, message, type } = err
+    return {
+      statusCode,
+      body: JSON.stringify({ message, type }),
+      headers
+    }
   }
 }
-
-module.exports = { errResult, BadRequest, Unauthorized, NotFound }
