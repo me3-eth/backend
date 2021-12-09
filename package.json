@@ -12,6 +12,7 @@
   "dependencies": {
     "@ensdomains/ens-contracts": "^0.0.7",
     "ethers": "^5.4.7",
+    "ipfs-http-client": "^54.0.2",
     "node-fetch": "^3.0.0",
     "replacestream": "^4.0.3",
     "web3.storage": "^3.3.2"
