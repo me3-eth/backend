@@ -2,10 +2,15 @@
 
 This is a serverless function, running on Netlify, that is used to deploy webpages to IPFS using [web3.storage](https://web3.storage/).
 
+![New site publishing flow](docs/backend-new-site.png)
+
 Content:
 
 * [Setup](#setup)
 * [Deploy](#deploy)
+* Functions:
+  * [ipfs-deploy](/functions/ipfs-deploy/README.md)
+  * [ipns-update](/functions/ipns-update/README.md)
 
 ## Setup
 
