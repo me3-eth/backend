@@ -51,20 +51,22 @@ function validateAuthorization (header) {
 async function updateIpns (cid, key) {
   const { name, value } = await ipfs.name.publish(
     `/ipfs/${cid}`,
-    { key, lifetime: '365d' }
+    { key, lifetime: '24h' }
   )
 
-  return name
+  return value
 }
 
+// has the side-effect of generating a key if one does not exist yet
 async function getKeyFor (subdomain) {
-  if (keyCache.subdomain) return { name: subdomain, id: keyCache.subdomain }
+  const knownKeys = await ipfs.key.list()
+  const foundKey = knownKeys.findIndex(k => k.name === subdomain) >= 0
 
-  const key = await ipfs.key.gen(subdomain, { type: 'ed25519' })
+  if (!foundKey) {
+    await ipfs.key.gen(subdomain, { type: 'ed25519' })
+  }
 
-  keyCache.subdomain = key.id
-
-  return key
+  return subdomain
 }
 
 export async function handler ({ httpMethod, body, isBase64Encoded }) {
@@ -81,7 +83,7 @@ export async function handler ({ httpMethod, body, isBase64Encoded }) {
   }
 
   const key = await getKeyFor(data.subdomain)
-  const ipnsHash = await updateIpns(data.hash, key)
+  const ipnsHash = await updateIpns(data.ipfsHash, key)
 
   return {
     statusCode: 200,
