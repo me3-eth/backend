@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "netlify functions:serve --port=7000",
     "lint": "standard | snazzy",
-    "test": "tap"
+    "test": "tap --coverage"
   },
   "author": "0xcharchar",
   "license": "GPL-3.0",
